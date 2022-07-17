@@ -1,6 +1,7 @@
 import requests
 import hashlib
 import sys
+import PySimpleGUI as sg
 
 def request_api_data(query_char):
     url = 'https://api.pwnedpasswords.com/range/' + query_char
@@ -31,15 +32,32 @@ def main(arg):
     for password in arg:
         count = pwned_api_check(password)
         if count:
-            print(f'Oh no...{password} was found {count} times :(.... you should probably change your password')
+           return (f'{password} was found {count} times :( Change your password')
         else:
-            print(f'{password} was NOT found. This Password is good!')
-    return 'Have a good day!'
+            return(f'{password} was NOT found. This Password is good!')
+
+
+sg.theme('dark grey 9')
+
+
+layout = [[sg.Text("What password would you like to check?")],
+          [sg.Input(key='-INPUT-')],
+          [sg.Text(size=(40,1), key='-OUTPUT-')],
+          [sg.Button('Ok'), sg.Button('Quit')]]
+
+
+window = sg.Window('Password Checker', layout)
+
+
 
 if __name__ == '__main__':
-    # try:     
-    #     sys.exit(main(sys.argv[1:]))
-    # except:
+    while True:
+        event, values = window.read()
+        # See if user wants to quit or window was closed
+        if event == sg.WINDOW_CLOSED or event == 'Quit':
+            break
+        # Output a message to the window
+        window['-OUTPUT-'].update( main([values['-INPUT-']]) )
 
-    pas = input('enter password to be checked: ')
-    sys.exit(main([pas]))
+# Finish up by removing from the screen
+window.close()
